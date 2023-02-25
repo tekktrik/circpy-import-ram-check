@@ -10,7 +10,7 @@ jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-      - name: CHeckout repo
+      - name: Checkout repo
         uses: actions/checkout@v3
       - name: Install dependencies
         run: |
@@ -39,7 +39,8 @@ jobs:
           filesystem: fat12.img
       - name: Check results of action
         run: |
-          if [ ${{ steps.actions-test.outputs.result }} != "Hello, world!" ]; then
-            echo "Action output did not return the expected result!"
+          numregex="^[0-9]+$"
+          if [ ! ${{ steps.actions-test.outputs.result }} =~ $numregex ]; then
+            echo "Action output did not return the expected result (integer)!"
             exit 1
           fi

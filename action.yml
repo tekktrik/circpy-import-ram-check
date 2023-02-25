@@ -1,6 +1,6 @@
-name: 'Action name here'
-description: 'Provide a description here'
-author: 'Your name here'
+name: 'Import RAM Usage Check'
+description: 'Check the amount of RAM used by a CircuitPython library import'
+author: 'Alec Delaney'
 inputs:
   firmware:
     description: 'A UF2 firmware file to load'
