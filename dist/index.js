@@ -731,6 +731,7 @@ const rp2040js_1 = __nccwpck_require__(8904);
 const bootrom_1 = __nccwpck_require__(4013);
 const memory_1 = __nccwpck_require__(596);
 const core = __importStar(__nccwpck_require__(2186));
+const TIMEOUT_MS = 1 * 60 * 1000;
 function runMCU(uf2_filepath, fs_filepath = null) {
     // Create the MCU
     const mcu = new rp2040js_1.RP2040();
@@ -747,6 +748,7 @@ function runMCU(uf2_filepath, fs_filepath = null) {
     let currentLine = '';
     // Create a USB CDC
     const cdc = new rp2040js_1.USBCDC(mcu.usbCtrl);
+    //const startTime = new Date()
     // Notify when USB CDC is connected
     cdc.onDeviceConnected = function () {
         // ----------------------------------
@@ -755,6 +757,9 @@ function runMCU(uf2_filepath, fs_filepath = null) {
     };
     // Handle receiving serial data
     cdc.onSerialData = function (buffer) {
+        // Check for timeout
+        //const currentTime = new Date()
+        //const delta = Math.abs(currentTime.getTime() - startTime.getTime())
         for (const byte of buffer) {
             const char = String.fromCharCode(byte);
             if (char === '\r' || char === '\n') {
@@ -775,6 +780,10 @@ function runMCU(uf2_filepath, fs_filepath = null) {
         // [Insert serial data code here]
         // ----------------------------------
     };
+    // Set timeout
+    setTimeout(function () {
+        throw new Error(`Timed out - took longer than ${TIMEOUT_MS / 1000} seconds to complete!`);
+    }, TIMEOUT_MS);
     // Move the program counter and execute
     mcu.core.PC = 0x10000000;
     mcu.execute();

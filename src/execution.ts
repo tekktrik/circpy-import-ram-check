@@ -3,6 +3,8 @@ import {bootrom} from './bootrom'
 import {loadUF2, loadFlash} from './memory'
 import * as core from '@actions/core'
 
+const TIMEOUT_MS = 1 * 60 * 1000
+
 export function runMCU(
   uf2_filepath: string,
   fs_filepath: string | null = null
@@ -56,6 +58,13 @@ export function runMCU(
     // [Insert serial data code here]
     // ----------------------------------
   }
+
+  // Set timeout
+  setTimeout(function () {
+    throw new Error(
+      `Timed out - took longer than ${TIMEOUT_MS / 1000} seconds to complete!`
+    )
+  }, TIMEOUT_MS)
 
   // Move the program counter and execute
   mcu.core.PC = 0x10000000
