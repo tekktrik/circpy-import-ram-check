@@ -8,6 +8,10 @@ on: # rebuild any PRs and main branch changes
 
 jobs:
   build: # make sure build/ci work properly
+    strategy:
+      fail-fast: true
+      matrix:
+        scenario: ['pass', 'timeout']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -21,6 +25,10 @@ jobs:
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Download UF2 firmware
@@ -29,15 +37,18 @@ jobs:
       - name: Create test filesystem image
         uses: tekktrik/rp2040js-circpy-create-fs@v1
         with:
-          fs-name: fat12.img
-          input-folder: ./tests/CIRCUITPY
+          fs-name: fat12_${{ matrix.scenario }}.img
+          input-folder: ./tests/${{ matrix.scenario }}
       - name: Run action
         id: action-test
         uses: ./
         with:
           firmware: firmware.uf2
-          filesystem: fat12.img
-      - name: Check results of action
+          filesystem: fat12_${{ matrix.scenario }}.img
+      - name: Run jest tests
+        run: |
+          npm run test
+      - name: Check results of running action
         run: |
           numregex="^[0-9]+$"
           if [ ! ${{ steps.actions-test.outputs.result }} =~ $numregex ]; then
