@@ -748,7 +748,6 @@ function runMCU(uf2_filepath, fs_filepath = null) {
     let currentLine = '';
     // Create a USB CDC
     const cdc = new rp2040js_1.USBCDC(mcu.usbCtrl);
-    //const startTime = new Date()
     // Notify when USB CDC is connected
     cdc.onDeviceConnected = function () {
         // ----------------------------------
@@ -757,9 +756,6 @@ function runMCU(uf2_filepath, fs_filepath = null) {
     };
     // Handle receiving serial data
     cdc.onSerialData = function (buffer) {
-        // Check for timeout
-        //const currentTime = new Date()
-        //const delta = Math.abs(currentTime.getTime() - startTime.getTime())
         for (const byte of buffer) {
             const char = String.fromCharCode(byte);
             if (char === '\r' || char === '\n') {
