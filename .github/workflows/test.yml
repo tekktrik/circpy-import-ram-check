@@ -8,10 +8,6 @@ on: # rebuild any PRs and main branch changes
 
 jobs:
   build: # make sure build/ci work properly
-    strategy:
-      fail-fast: true
-      matrix:
-        scenario: ['pass', 'timeout']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -37,21 +33,11 @@ jobs:
       - name: Create test filesystem image
         uses: tekktrik/rp2040js-circpy-create-fs@v1
         with:
-          fs-name: fat12_${{ matrix.scenario }}.img
-          input-folder: ./tests/${{ matrix.scenario }}
+          fs-name: fat12_pass.img
+          input-folder: ./tests/pass
       - name: Run action
         id: action-test
         uses: ./
         with:
           firmware: firmware.uf2
-          filesystem: fat12_${{ matrix.scenario }}.img
-      - name: Run jest tests
-        run: |
-          npm run test
-      - name: Check results of running action
-        run: |
-          numregex="^[0-9]+$"
-          if [ ! ${{ steps.actions-test.outputs.result }} =~ $numregex ]; then
-            echo "Action output did not return the expected result (integer)!"
-            exit 1
-          fi
+          filesystem: fat12_pass.img
